@@ -1,36 +1,102 @@
-### Install work specific tools
+<#
+    .SYNOPSIS
+    Installs base applications that members of the USS IT Services department use.
 
-# Disable and re-enable WSUS listing in Policy to install RSAT tools.
-# Remove the comment on the line for the Group Policy Management Tools if needed.
+    .DESCRIPTION
+    This script will install RSAT AD and Group Policy Management Tools, Configuration Manager Console, and a few other applications via winget.
 
-# Temporarily disable Windows Update policy, restarting Windows Update.
-$UseWUServer = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" | Select-Object -ExpandProperty UseWUServer
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value 0
-Restart-Service "Windows Update"
+    .NOTES
+    Version:        0.1
+    Author:         LDG
+    Creation Date:  10/19/2023
+    Purpose/Change: Automate setup process for USS IT admin systems.
+#>
 
-# Install RSAT AD Management Tools
-Get-WindowsCapability -Name "Rsat.ActiveDirectory.DS-LDS.Tools*" -Online | Add-WindowsCapability -Online
+#-----------------------------------------------------------[Parameters]-----------------------------------------------------------
 
-# Uncomment line below to also install RSAT Group Policy Management tools, if needed.
-Get-WindowsCapability -Name "Rsat.GroupPolicy.Management.Tools*" -Online | Add-WindowsCapability -Online
+#---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
-# Restore Windows Update policy and restart Windows Update service.
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value $UseWUServer
-Restart-Service "Windows Update"
+# Ensure best coding practices are followed
+Set-StrictMode -Version Latest
 
-# Install applications from winget
-winget install -e --id Yubico.Authenticator --accept-package-agreements
-winget install -e --id Yubico.YubikeyManager --accept-package-agreements
-winget install -e --id Notepad++.Notepad++ --accept-package-agreements
-winget install -e --id Dell.CommandUpdate.Universal --accept-package-agreements
-winget install -e --id DominikReichl.KeePass --accept-package-agreements
+# Set Error Action to Continue
+$ErrorActionPreference = "Continue"
 
-### Install developer tools
-winget install -e --id Git.Git --accept-package-agreements
-winget install -e --id Microsoft.WindowsTerminal --accept-package-agreements
-winget install -e --id Microsoft.SQLServerManagementStudio --accept-package-agreements
+#----------------------------------------------------------[Declarations]----------------------------------------------------------
 
-### Install misc applications and tools
-winget install -e --id Microsoft.PowerToys --accept-package-agreements
-winget install -e --id Mozilla.Firefox --accept-package-agreements
-winget install -e --id VideoLAN.VLC --accept-package-agreements
+#-----------------------------------------------------------[Functions]------------------------------------------------------------
+
+<#
+    .DESCRIPTION
+    The Install-Rsat-Tools function installs RSAT AD and Group Policy Management Tools. During this process it will disable and re-enable WSUS listing in Policy to prevent Windows Updates.
+ #>
+function installRsatTools {
+    # Temporarily disable Windows Update policy, restarting Windows Update.
+    $UseWUServer = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" | Select-Object -ExpandProperty UseWUServer
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value 0
+    Restart-Service "Windows Update"
+
+    # Install RSAT AD Management Tools
+    Get-WindowsCapability -Name "Rsat.ActiveDirectory.DS-LDS.Tools*" -Online | Add-WindowsCapability -Online
+
+    # Install RSAT Group Policy Management Tools
+    Get-WindowsCapability -Name "Rsat.GroupPolicy.Management.Tools*" -Online | Add-WindowsCapability -Online
+
+    # Restore Windows Update policy and restart Windows Update service.
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value $UseWUServer
+    Restart-Service "Windows Update"
+}
+
+
+function installConfigurationManagerConsole {
+    #todo
+}
+
+
+function installWingetApplications {
+    # Declare an array of all Winget application ids.
+    $wingetAppIds = @(
+        "Yubico.Authenticator",
+        "Yubico.YubikeyManager",
+        "Notepad++.Notepad++",
+        "DominikReichl.KeePass",
+        "Git.Git",
+        "Microsoft.WindowsTerminal",
+        "Microsoft.SQLServerManagementStudio",
+        "Microsoft.PowerToys",
+        "Dell.CommandUpdate.Universal",
+        "Mozilla.Firefox",
+        "VideoLAN.VLC"
+    )
+
+    # Iterate over $wingetAppIds and install each one.
+    foreach ($id in $wingetAppIds) {
+        $wingetOutput = @(winget install -e --id $id --accept-package-agreements)
+
+        if ($wingetOutput[-1] -ne "Successfully installed") {
+            Write-Warning ($id + ": " + $wingetOutput[-1])
+        } else {
+            Write-Output ($id + ": " + $wingetOutput[-1])
+        }
+    }
+}
+
+function ConsoleOut {
+    #todo
+}
+
+
+
+function main {
+    installRsatTools
+    #installConfigurationManagerConsole
+    installWingetApplications
+}
+
+
+#-----------------------------------------------------------[Execution]------------------------------------------------------------
+
+# Call the main function
+main
+
+#-----------------------------------------------------------[Finish up]------------------------------------------------------------
