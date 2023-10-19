@@ -24,11 +24,17 @@ $ErrorActionPreference = "Continue"
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
+# Declare log types and their values.
+$normalLog = "Normal"
+$warningLog = "Warning"
+$errorLog = "Error"
+
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
 <#
     .DESCRIPTION
-    The Install-Rsat-Tools function installs RSAT AD and Group Policy Management Tools. During this process it will disable and re-enable WSUS listing in Policy to prevent Windows Updates.
+    The installRsatTools function installs RSAT AD and Group Policy Management Tools. During this process it will disable and re-enable WSUS listing in Policy to prevent Windows Updates.
+    todo: check for OS version and apply the correct WSUS policy. Currently errors on Win 11
  #>
 function installRsatTools {
     # Temporarily disable Windows Update policy, restarting Windows Update.
@@ -47,12 +53,15 @@ function installRsatTools {
     Restart-Service "Windows Update"
 }
 
-
 function installConfigurationManagerConsole {
     #todo
 }
 
-
+<#
+    .DESCRIPTION
+    The installWingetApplications function installs all applications whose id's are listed in $wingetAppIds.
+    #todo: before installing applications, check and update to latest winget version. https://stackoverflow.com/questions/74166150/install-winget-by-the-command-line-powershell
+#>
 function installWingetApplications {
     # Declare an array of all Winget application ids.
     $wingetAppIds = @(
@@ -72,27 +81,49 @@ function installWingetApplications {
     # Iterate over $wingetAppIds and install each one.
     foreach ($id in $wingetAppIds) {
         $wingetOutput = @(winget install -e --id $id --accept-package-agreements)
+        $message = ($id + " - " + $wingetOutput[-1])
 
-        if ($wingetOutput[-1] -ne "Successfully installed") {
-            Write-Warning ($id + ": " + $wingetOutput[-1])
+        # Determine console log type based on successful install
+        if ($message -notcontains "Successfully installed") {
+            log $warningLog Get-FunctionName $message
         } else {
-            Write-Output ($id + ": " + $wingetOutput[-1])
+            log $normalLog Get-FunctionName $message
         }
     }
 }
 
-function ConsoleOut {
-    #todo
+<#
+    .DESCRIPTION
+    The log function takes in three parameters, the type of log, the function it originated from, and the log message and outputs it to the console.
+
+    .PARAMETER type
+    Specifies the type of output to write.
+
+    .PARAMETER function
+    Specifies the name of the function passing the log message.
+
+    .PARAMETER message
+    Specifies the message of the log.
+
+#>
+function log ([string]$type, [string]$function, [string]$message) {
+    switch -Exact ($type) {
+        $normalLog {Write-Output ($function + ": " + $message); Break}
+        $warningLog {Write-Warning ($function + ": " + $message); Break}
+        $errorLog {Write-Error ($function + ": " + $message); Break}
+        Default {Write-Error "Something went very wrong!"}
+    }
 }
 
-
-
+<#
+    .DESCRIPTION
+    The main function calls all other functions to perform the actions required by this script.
+#>
 function main {
     installRsatTools
     #installConfigurationManagerConsole
     installWingetApplications
 }
-
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
