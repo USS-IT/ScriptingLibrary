@@ -34,7 +34,6 @@ $errorLog = "Error"
 <#
     .DESCRIPTION
     The installRsatTools function installs RSAT AD and Group Policy Management Tools. During this process it will disable and re-enable WSUS listing in Policy to prevent Windows Updates.
-    todo: check for OS version and apply the correct WSUS policy. Currently errors on Win 11
  #>
 function installRsatTools {
     # Temporarily disable Windows Update policy, restarting Windows Update.
@@ -123,6 +122,7 @@ function main {
     installRsatTools
     #installConfigurationManagerConsole
     installWingetApplications
+    # todo: add base taskbar layout
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
