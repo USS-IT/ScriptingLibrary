@@ -14,11 +14,9 @@
                 <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.ControlPanel"/>
                 <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer"/>
                 <taskbar:DesktopApp DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Firefox.lnk"/>
-                <taskbar:UWA AppUserModelID="Microsoft.OutlookForWindows_8wekyb3d8bbwe!Microsoft.OutlookforWindows"/>
+                <taskbar:UWA AppUserModelID="Microsoft.Office.OUTLOOK.EXE.15"/>
                 <taskbar:DesktopApp DesktopApplicationLinkPath="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Microsoft Teams (work or school).lnk"/>
                 <taskbar:DesktopApp DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Notepad++.lnk"/>
-                <taskbar:UWA AppUserModelID="AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"/>
-                <taskbar:DesktopApp DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\1Password\1Password.lnk"/>
                 <taskbar:DesktopApp DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\KeePass 2.lnk"/>
                 <taskbar:DesktopApp DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Yubico Authenticator\Yubico Authenticator.lnk"/>
                 <taskbar:UWA AppUserModelID="Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"/>

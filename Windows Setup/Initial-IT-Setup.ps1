@@ -62,6 +62,8 @@ function installConfigurationManagerConsole {
     $newConfigurationManagerFilePath = "\\win.ad.jhu.edu\data\emmsstuff$\System Center 2012\SCCM 2012 R2\SCCM 2107 Console Setup\"
     $tempDriveName = "SCCMInstall-Temp"
     New-PSDrive -Name $tempDriveName -PSProvider "FileSystem" -Root $newConfigurationManagerFilePath
+
+    printLog $normalLog $(getLogInfo) "Running SCCM installer..."
     Invoke-Expression -Command $($tempDriveName + ":\ConsoleSetup.exe")
 
     #todo: pass site name to installer through script? site name: JHECMCAS.win.ad.jhu.edu
@@ -141,6 +143,7 @@ function installWingetApplications {
  #>
 
 function setTaskbar {
+    printLog $normalLog $(getLogInfo) "Setting default taskbar..."
     $username = $($Env:UserName)
     $filePath = "C:\Users\" + $username + "\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"
     #todo: update me once merged with main!
