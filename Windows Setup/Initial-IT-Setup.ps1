@@ -137,7 +137,6 @@ function installWingetApplications {
 <#
     .DESCRIPTION
     setTaskbar overwrites the existing LayoutModification.xml file in the user's %LocalAppData%\Microsoft\Windows\Shell directory.
-    #todo: add cli options for different browsers.
  #>
  #>
 
@@ -192,11 +191,10 @@ function getLogInfo {
     The main function calls all other functions to perform the actions required by this script.
 #>
 function main {
-    #installRsatTools
-    #installConfigurationManagerConsole
-    #installLatestWinget
-    #installWingetApplications
-    # todo: add base taskbar layout
+    installRsatTools
+    installConfigurationManagerConsole
+    installLatestWinget
+    installWingetApplications
     setTaskbar
 }
 
