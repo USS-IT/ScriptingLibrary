@@ -131,6 +131,25 @@ function installWingetApplications {
 
 <#
     .DESCRIPTION
+    setTaskbar overwrites the existing LayoutModification.xml file in the user's %LocalAppData%\Microsoft\Windows\Shell directory.
+    #todo: add cli options for different browsers.
+ #>
+ #>
+
+function setTaskbar {
+    $username = $($Env:UserName)
+    $filePath = "C:\Users\" + $username + "\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"
+    #todo: update me once merged with main!
+    $newTaskbarLayoutLink = "https://raw.githubusercontent.com/USS-IT/ScriptLibrary/Initial-IT-Setup-Additional-Functionality/Windows%20Setup/LayoutModification.xml"
+    Invoke-WebRequest -URI $newTaskbarLayoutLink -OutFile $filePath -UseBasicParsing
+
+    #todo: add option to provide custom xml link
+    #todo: add option to change pinned browser
+    #todo: add option to pin old/new outlook and teams
+}
+
+<#
+    .DESCRIPTION
     The printLog function takes in three parameters, the type of log, the function it originated from, and the log message and outputs it to the console.
 
     .PARAMETER type
@@ -168,11 +187,12 @@ function getLogInfo {
     The main function calls all other functions to perform the actions required by this script.
 #>
 function main {
-    installRsatTools
+    #installRsatTools
     #installConfigurationManagerConsole
-    installLatestWinget
-    installWingetApplications
+    #installLatestWinget
+    #installWingetApplications
     # todo: add base taskbar layout
+    setTaskbar
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
