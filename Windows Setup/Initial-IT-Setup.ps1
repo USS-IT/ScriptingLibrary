@@ -37,23 +37,23 @@ $errorLog = "Error"
  #>
 function installRsatTools {
     # Temporarily disable Windows Update policy, restarting Windows Update.
-    log $normalLog Get-FunctionName "Disabling Windows Update..."
+    printLog $normalLog $(getLogInfo) "Disabling Windows Update..."
     $UseWUServer = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" | Select-Object -ExpandProperty UseWUServer
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value 0
     Restart-Service "Windows Update"
 
     # Install RSAT AD Management Tools
-    log $normalLog Get-FunctionName "Installing Rsat AD tools..."
+    printLog $normalLog $(getLogInfo) "Installing Rsat AD tools..."
     Get-WindowsCapability -Name "Rsat.ActiveDirectory.DS-LDS.Tools*" -Online | Add-WindowsCapability -Online
-    log $normalLog Get-FunctionName "Installed Rsat AD tools"
+    printLog $normalLog $(getLogInfo) "Installed Rsat AD tools"
 
     # Install RSAT Group Policy Management Tools
-    log $normalLog Get-FunctionName "Installing Rsat GP tools..."
+    printLog $normalLog $(getLogInfo) "Installing Rsat GP tools..."
     Get-WindowsCapability -Name "Rsat.GroupPolicy.Management.Tools*" -Online | Add-WindowsCapability -Online
-    log $normalLog Get-FunctionName "Installed Rsat GP tools"
+    printLog $normalLog $(getLogInfo) "Installed Rsat GP tools"
 
     # Restore Windows Update policy and restart Windows Update service.
-    log $normalLog Get-FunctionName "Enabling Windows Update..."
+    printLog $normalLog $(getLogInfo) "Enabling Windows Update..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value $UseWUServer
     Restart-Service "Windows Update"
 }
@@ -78,20 +78,20 @@ function installLatestWinget {
         $wingetDownloadLink = $apiInfo.assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
 
         # Download the installer:
-        log $normalLog $(Get-FunctionName) "Downloading latest Winget version..."
+        printLog $normalLog $(getLogInfo) "Downloading latest Winget version..."
         Invoke-WebRequest -URI $wingetDownloadLink -OutFile winget.msixbundle -UseBasicParsing
 
         # Install winget:
-        log $normalLog $(Get-FunctionName) "Installing latest Winget version..."
+        printLog $normalLog $(getLogInfo) "Installing latest Winget version..."
         Add-AppxPackage winget.msixbundle
-        log $normalLog $(Get-FunctionName) "Installed latest Winget version"
+        printLog $normalLog $(getLogInfo) "Installed latest Winget version"
 
         # Remove the installer:
         Remove-Item winget.msixbundle
 
-        log $normalLog $(Get-FunctionName) "Installed latest Winget version"
+        log $normalLog $(getLogInfo) "Installed latest Winget version"
     } else {
-        log $normalLog $(Get-FunctionName) "Latest Winget version is already installed!"
+        printLog $normalLog $(getLogInfo) "Latest Winget version is already installed!"
     }
 }
 
@@ -122,16 +122,16 @@ function installWingetApplications {
 
         # Determine console log type based on successful install
         if ($message -notcontains "Successfully installed") {
-            log $warningLog Get-FunctionName $message
+            printLog $warningLog $(getLogInfo) $message
         } else {
-            log $normalLog Get-FunctionName $message
+            printLog $normalLog $(getLogInfo) $message
         }
     }
 }
 
 <#
     .DESCRIPTION
-    The log function takes in three parameters, the type of log, the function it originated from, and the log message and outputs it to the console.
+    The printLog function takes in three parameters, the type of log, the function it originated from, and the log message and outputs it to the console.
 
     .PARAMETER type
     Specifies the type of output to write.
@@ -143,7 +143,7 @@ function installWingetApplications {
     Specifies the message of the log.
 
 #>
-function log ([string]$type, [Array]$logInfo, [string]$message) {
+function printLog ([string]$type, [Array]$logInfo, [string]$message) {
     switch -Exact ($type) {
         $normalLog {Write-Output ($logInfo[0] + ": " + $message); Break}
         $warningLog {Write-Warning ($logInfo[0] + ": " + $message); Break}
