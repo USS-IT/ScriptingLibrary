@@ -124,14 +124,14 @@ function installWingetApplications {
 
     # Iterate over $wingetAppIds and install each one.
     foreach ($id in $wingetAppIds) {
-        $wingetOutput = @(winget install -e --id $id --accept-package-agreements)
+        $wingetOutput = @(winget install -e --id $id --accept-package-agreements --accept-source-agreements)
         $message = ($id + " - " + $wingetOutput[-1])
 
         # Determine console log type based on successful install
-        if ($message -notcontains "Successfully installed") {
-            printLog $warningLog $(getLogInfo) $message
-        } else {
+        if ($message.Contains("Successfully installed")) {
             printLog $normalLog $(getLogInfo) $message
+        } else {
+            printLog $warningLog $(getLogInfo) $message
         }
     }
 }
@@ -140,8 +140,6 @@ function installWingetApplications {
     .DESCRIPTION
     setTaskbar overwrites the existing LayoutModification.xml file in the user's %LocalAppData%\Microsoft\Windows\Shell directory.
  #>
- #>
-
 function setTaskbar {
     printLog $normalLog $(getLogInfo) "Setting default taskbar..."
     $username = $($Env:UserName)
