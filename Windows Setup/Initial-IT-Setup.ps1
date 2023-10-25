@@ -96,7 +96,7 @@ function installLatestWinget {
         # Remove the installer:
         Remove-Item winget.msixbundle
 
-        log $normalLog $(getLogInfo) "Installed latest Winget version"
+        printLog $normalLog $(getLogInfo) "Installed latest Winget version"
     } else {
         printLog $normalLog $(getLogInfo) "Latest Winget version is already installed!"
     }
