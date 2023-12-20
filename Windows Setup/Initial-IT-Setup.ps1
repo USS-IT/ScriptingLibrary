@@ -173,24 +173,37 @@ function installWingetApplications {
         }
     }
 
-
 }
 
 <#
     .DESCRIPTION
     setTaskbar overwrites the existing LayoutModification.xml file in the user's %LocalAppData%\Microsoft\Windows\Shell directory.
  #>
-function setTaskbar {
-    printLog $normalLog $(getLogInfo) "Setting default taskbar..."
+function setLayout {
     $username = $($Env:UserName)
     $filePath = "C:\Users\" + $username + "\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"
-    #todo: update me once merged with main!
-    $newTaskbarLayoutLink = "https://raw.githubusercontent.com/USS-IT/ScriptLibrary/Initial-IT-Setup-Additional-Functionality/Windows%20Setup/LayoutModification.xml"
-    Invoke-WebRequest -URI $newTaskbarLayoutLink -OutFile $filePath -UseBasicParsing
 
-    #todo: add option to provide custom xml link
-    #todo: add option to change pinned browser
-    #todo: add option to pin old/new outlook and teams
+    $personalLayoutResponse = Read-Host "Would you like to specify your own LayoutModification.xml file? (y/n)"
+
+    if ($personalLayoutResponse.Equals("y")){
+        $personalLayoutInfo = Read-Host "Please enter a url or a filepath"
+
+        # If information provided is a local path, grab the local json. Otherwise, do a web request.
+        if (Test-Path -Path $personalLayoutInfo -PathType leaf) {
+            Copy-Item $personalLayoutInfo -Destination $filePath
+        } else {
+            Invoke-WebRequest -URI $personalLayoutInfo -OutFile $filePath -UseBasicParsing
+        }
+    } else {
+        printLog $normalLog $(getLogInfo) "Setting default layout..."
+
+        #todo: update me once merged with main!
+        $newTaskbarLayoutLink = "https://raw.githubusercontent.com/USS-IT/ScriptLibrary/Initial-IT-Setup-Additional-Functionality/Windows%20Setup/LayoutModification.xml"
+        Invoke-WebRequest -URI $newTaskbarLayoutLink -OutFile $filePath -UseBasicParsing
+    }
+
+    printLog $normalLog $(getLogInfo) "Layout updated! Please restart for changes to take effect."
+
 }
 
 <#
@@ -236,7 +249,7 @@ function main {
     installConfigurationManagerConsole
     installLatestWinget
     installWingetApplications
-    setTaskbar
+    setLayout
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
