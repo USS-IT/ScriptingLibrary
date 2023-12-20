@@ -6,7 +6,7 @@
     This script will install RSAT AD and Group Policy Management Tools, Configuration Manager Console, and a few other applications via winget.
 
     .NOTES
-    Version:        0.1
+    Version:        1.0
     Author:         LDG
     Creation Date:  10/19/2023
     Purpose/Change: Automate setup process for USS IT admin systems.
