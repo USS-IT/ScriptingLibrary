@@ -64,7 +64,8 @@ function installConfigurationManagerConsole {
     New-PSDrive -Name $tempDriveName -PSProvider "FileSystem" -Root $newConfigurationManagerFilePath
 
     printLog $normalLog $(getLogInfo) "Running SCCM installer..."
-    Invoke-Expression -Command $($tempDriveName + ":\ConsoleSetup.exe")
+    Invoke-Expression "SCCMInstall-Temp:\ConsoleSetup.exe TargetDir='C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\' DefaultSiteServerName=JHECMCAS.win.ad.jhu.edu"
+    Write-Output "here"
 
     #todo: pass site name to installer through script? site name: JHECMCAS.win.ad.jhu.edu
 }
@@ -192,11 +193,11 @@ function getLogInfo {
     The main function calls all other functions to perform the actions required by this script.
 #>
 function main {
-    installRsatTools
+    #installRsatTools
     installConfigurationManagerConsole
-    installLatestWinget
-    installWingetApplications
-    setTaskbar
+    #installLatestWinget
+    #installWingetApplications
+    #setTaskbar
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
