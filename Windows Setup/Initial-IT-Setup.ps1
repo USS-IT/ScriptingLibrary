@@ -107,6 +107,7 @@ function installLatestWinget {
     The installWingetApplications function installs all applications whose id's are listed in $wingetAppIds.
 #>
 function installWingetApplications {
+
     # Declare an array of all Winget application ids.
     $wingetAppIds = @(
         "Yubico.Authenticator",
@@ -121,6 +122,30 @@ function installWingetApplications {
         "Mozilla.Firefox",
         "VideoLAN.VLC"
     )
+    # Declare an array of all Microsoft Store application ids.
+    $msstoreAppIds = @(
+    )
+
+    $additionalAppsResponse = Read-Host "Would you like to specific additional applications to install via winget (please see readme for formatting)? (y/n)"
+
+    if($additionalAppsResponse.Equals("y")){
+        $additionalAppsInfo = Read-Host "Please enter a url or a filepath"
+
+        # If information provided is a local path, grab the local json. Otherwise, do a web request.
+        if (Test-Path -Path $additionalAppsInfo -PathType leaf) {
+            $appsJson = Get-Content $additionalAppsInfo -Raw | ConvertFrom-Json
+        } else {
+            $appsJson = (Invoke-WebRequest -URI $additionalAppsInfo).Content | ConvertFrom-Json
+        }
+
+        foreach ($app in $appsJson.wingetApps){
+            $wingetAppIds += $app.id
+        }
+
+        foreach ($app in $appsJson.msstoreApps){
+            $msstoreAppIds += $app.id
+        }
+    }
 
     # Iterate over $wingetAppIds and install each one.
     foreach ($id in $wingetAppIds) {
@@ -134,6 +159,21 @@ function installWingetApplications {
             printLog $warningLog $(getLogInfo) $message
         }
     }
+
+    # Iterate over $msstoreAppIds and install each one.
+    foreach ($id in $msstoreAppIds) {
+        $wingetOutput = @(winget install -e --id $id --source msstore --accept-package-agreements --accept-source-agreements)
+        $message = ($id + " - " + $wingetOutput[-1])
+
+        # Determine console log type based on successful install
+        if ($message.Contains("Successfully installed")) {
+            printLog $normalLog $(getLogInfo) $message
+        } else {
+            printLog $warningLog $(getLogInfo) $message
+        }
+    }
+
+
 }
 
 <#
@@ -192,11 +232,11 @@ function getLogInfo {
     The main function calls all other functions to perform the actions required by this script.
 #>
 function main {
-    #installRsatTools
+    installRsatTools
     installConfigurationManagerConsole
-    #installLatestWinget
-    #installWingetApplications
-    #setTaskbar
+    installLatestWinget
+    installWingetApplications
+    setTaskbar
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
