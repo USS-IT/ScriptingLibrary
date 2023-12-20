@@ -64,10 +64,9 @@ function installConfigurationManagerConsole {
     New-PSDrive -Name $tempDriveName -PSProvider "FileSystem" -Root $newConfigurationManagerFilePath
 
     printLog $normalLog $(getLogInfo) "Running SCCM installer..."
-    Invoke-Expression "SCCMInstall-Temp:\ConsoleSetup.exe TargetDir='C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\' DefaultSiteServerName=JHECMCAS.win.ad.jhu.edu"
-    Write-Output "here"
+    Invoke-Expression $($tempDriveName + ":\ConsoleSetup.exe TargetDir='C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\' DefaultSiteServerName=JHECMCAS.win.ad.jhu.edu EnableSQM=0")
 
-    #todo: pass site name to installer through script? site name: JHECMCAS.win.ad.jhu.edu
+    # todo: update statement to install silently. Currently fails to install if /q is added. Maybe need to retry using Start-Process.
 }
 
 <#
