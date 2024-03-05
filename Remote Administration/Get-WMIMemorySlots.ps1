@@ -13,3 +13,4 @@ Get-WmiObject -Class "win32_PhysicalMemory" -namespace "root\CIMV2" -computerNam
      "Memory Installed: " + $_.DeviceLocator
      "Memory Size: " + ($_.Capacity / 1GB) + " GB"
 }
+Read-Host "Press enter to exit" | Out-Null
